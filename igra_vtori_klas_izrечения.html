@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Подреди изречението</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      min-height: 100vh;
+      color: #3b2b1f;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(255,255,255,0.45) 0 4%, transparent 5%),
+        radial-gradient(circle at 80% 10%, rgba(255,255,255,0.4) 0 5%, transparent 6%),
+        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.35) 0 4%, transparent 5%),
+        linear-gradient(135deg, #ffb3d9, #ffd166, #a0e7e5, #b4f8c8, #cdb4db);
+      background-size: 220px 220px, 260px 260px, 300px 300px, cover;
+    }
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .card {
+      background: rgba(255,255,255,0.9);
+      border: 5px solid #ff8fab;
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.15);
+    }
+    h1 {
+      text-align: center;
+      color: #ff4d8d;
+      margin: 0 0 10px;
+      font-size: 2.2rem;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 1.15rem;
+      margin-bottom: 20px;
+    }
+    .topbar {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .badge {
+      background: #fff0a8;
+      border: 3px solid #ffbf69;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: bold;
+      font-size: 1.05rem;
+    }
+    .hidden { display: none; }
+    .story {
+      background: linear-gradient(135deg, #fff8cc, #d9f7ff);
+      border: 3px dashed #7bdff2;
+      border-radius: 20px;
+      padding: 16px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+    .sentence-area, .word-bank, .punctuation-bank {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 20px;
+      min-height: 92px;
+    }
+    .sentence-area {
+      background: #f3f9ff;
+      border: 3px dashed #6ec6ff;
+    }
+    .word-bank {
+      background: #fff7ef;
+      border: 3px dashed #ffb4a2;
+    }
+    .punctuation-bank {
+      background: #f5fff3;
+      border: 3px dashed #9be564;
+    }
+    .label {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #5a3d2b;
+    }
+    .chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .chip {
+      border: none;
+      border-radius: 16px;
+      padding: 10px 14px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform .08s ease;
+    }
+    .chip:hover { transform: translateY(-2px); }
+    .word-chip {
+      background: #ffd6e0;
+      border: 2px solid #ff8fab;
+    }
+    .built-chip {
+      background: #caffbf;
+      border: 2px solid #7bc96f;
+    }
+    .punct-chip {
+      background: #a0e7e5;
+      border: 2px solid #57c7c2;
+      min-width: 54px;
+      text-align: center;
+    }
+    .selected-punct {
+      background: #bde0fe;
+      border: 2px solid #5aa9e6;
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 16px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      min-width: 60px;
+      text-align: center;
+    }
+    .controls {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    button.mainbtn {
+      border: none;
+      border-radius: 18px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .primary { background: #ff6b6b; color: white; }
+    .secondary { background: #ffd166; color: #513c06; }
+    .success { background: #7bd389; color: #153d1d; }
+    .feedback {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 18px;
+      font-size: 1.08rem;
+      line-height: 1.6;
+      display: none;
+    }
+    .good {
+      display: block;
+      background: #e7ffe8;
+      border: 3px solid #7bd389;
+    }
+    .bad {
+      display: block;
+      background: #fff0f0;
+      border: 3px solid #ff8c8c;
+    }
+    .result-box {
+      font-size: 1.15rem;
+      line-height: 1.7;
+      background: #fff8dd;
+      border: 3px solid #ffcf56;
+      border-radius: 22px;
+      padding: 18px;
+      margin-top: 18px;
+    }
+    .emoji {
+      font-size: 1.5rem;
+    }
+    .footer-note {
+      text-align: center;
+      opacity: 0.85;
+      margin-top: 16px;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="startScreen">
+      <h1>🌈 Подреди изречението! ✨</h1>
+      <div class="subtitle">Забавна игра за 2. клас</div>
+      <div class="story">
+        Малки езикови вълшебници, време е за игра! Натискай думите в правилния ред, за да построиш изречение.
+        После избери правилния препинателен знак в края. Има <strong>15 изречения</strong>. Готов ли си? 🎈
+      </div>
+      <div style="text-align:center;">
+        <button class="mainbtn primary" onclick="startGame()">Започни играта</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="gameScreen">
+      <div class="topbar">
+        <div class="badge" id="counter">Изречение 1 / 15</div>
+        <div class="badge" id="score">Точки: 0</div>
+      </div>
+
+      <h1 style="font-size:1.8rem;">🧩 Подреди думите</h1>
+
+      <div class="sentence-area">
+        <div class="label">Твоето изречение:</div>
+        <div class="chips" id="builtWords"></div>
+        <div style="margin-top:10px;">
+          <span class="label">Препинателен знак:</span>
+          <span class="selected-punct" id="selectedPunct">_</span>
+        </div>
+      </div>
+
+      <div class="word-bank">
+        <div class="label">Думи за подреждане:</div>
+        <div class="chips" id="wordBank"></div>
+      </div>
+
+      <div class="punctuation-bank">
+        <div class="label">Избери знак в края:</div>
+        <div class="chips" id="punctBank"></div>
+      </div>
+
+      <div class="controls">
+        <button class="mainbtn secondary" onclick="resetCurrent()">Изчисти</button>
+        <button class="mainbtn success" onclick="checkAnswer()">Провери</button>
+        <button class="mainbtn primary hidden" id="nextBtn" onclick="nextSentence()">Следващо</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="card hidden" id="endScreen">
+      <h1>🎉 Браво! 🎉</h1>
+      <div class="result-box" id="finalResult"></div>
+      <div style="text-align:center; margin-top:18px;">
+        <button class="mainbtn primary" onclick="restartGame()">Играй отново</button>
+      </div>
+      <div class="footer-note">Създадено като весела учебна игра за деца във 2. клас.</div>
+    </div>
+  </div>
+
+  <script>
+    const data = [
+      { words: ["Мама", "чете", "книга"], punct: ".", full: "Мама чете книга." },
+      { words: ["Тате", "кара", "колело"], punct: ".", full: "Тате кара колело." },
+      { words: ["Къде", "е", "моят", "молив"], punct: "?", full: "Къде е моят молив?" },
+      { words: ["Децата", "играят", "в", "двора"], punct: ".", full: "Децата играят в двора." },
+      { words: ["Колко", "е", "красива", "дъгата"], punct: "!", full: "Колко е красива дъгата!" },
+      { words: ["Котето", "спи", "на", "стола"], punct: ".", full: "Котето спи на стола." },
+      { words: ["Кой", "почука", "на", "вратата"], punct: "?", full: "Кой почука на вратата?" },
+      { words: ["Аз", "обичам", "сладолед"], punct: ".", full: "Аз обичам сладолед." },
+      { words: ["Браво", "ти", "се", "справи"], punct: "!", full: "Браво ти се справи!" },
+      { words: ["Утре", "ще", "ходим", "в", "парка"], punct: ".", full: "Утре ще ходим в парка." },
+      { words: ["Защо", "птичката", "пее"], punct: "?", full: "Защо птичката пее?" },
+      { words: ["Навън", "вали", "тих", "дъжд"], punct: ".", full: "Навън вали тих дъжд." },
+      { words: ["Ела", "бързо", "тук"], punct: "!", full: "Ела бързо тук!" },
+      { words: ["Ние", "рисуваме", "шарени", "цветя"], punct: ".", full: "Ние рисуваме шарени цветя." },
+      { words: ["Как", "се", "казва", "това", "животно"], punct: "?", full: "Как се казва това животно?" }
+    ];
+
+    const punctOptions = [".", "?", "!"];
+
+    let current = 0;
+    let score = 0;
+    let built = [];
+    let selectedPunct = "";
+    let solved = false;
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function startGame() {
+      document.getElementById("startScreen").classList.add("hidden");
+      document.getElementById("gameScreen").classList.remove("hidden");
+      renderSentence();
+    }
+
+    function renderSentence() {
+      solved = false;
+      built = [];
+      selectedPunct = "";
+      const item = data[current];
+
+      document.getElementById("counter").textContent = `Изречение ${current + 1} / ${data.length}`;
+      document.getElementById("score").textContent = `Точки: ${score}`;
+      document.getElementById("selectedPunct").textContent = "_";
+      document.getElementById("feedback").className = "feedback";
+      document.getElementById("feedback").innerHTML = "";
+      document.getElementById("nextBtn").classList.add("hidden");
+
+      const wordBank = document.getElementById("wordBank");
+      const builtWords = document.getElementById("builtWords");
+      const punctBank = document.getElementById("punctBank");
+
+      wordBank.innerHTML = "";
+      builtWords.innerHTML = "";
+      punctBank.innerHTML = "";
+
+      shuffle(item.words).forEach((word, index) => {
+        const btn = document.createElement("button");
+        btn.className = "chip word-chip";
+        btn.textContent = word;
+        btn.onclick = () => addWord(word, btn);
+        wordBank.appendChild(btn);
+      });
+
+      punctOptions.forEach(mark => {
+        const btn = document.createElement("button");
+        btn.className = "chip punct-chip";
+        btn.textContent = mark;
+        btn.onclick = () => choosePunct(mark);
+        punctBank.appendChild(btn);
+      });
+    }
+
+    function addWord(word, btn) {
+      if (solved) return;
+      built.push(word);
+      btn.disabled = true;
+      btn.style.opacity = "0.45";
+      renderBuilt();
+    }
+
+    function renderBuilt() {
+      const builtWords = document.getElementById("builtWords");
+      builtWords.innerHTML = "";
+
+      built.forEach((word, index) => {
+        const btn = document.createElement("button");
+        btn.className = "chip built-chip";
+        btn.textContent = word;
+        btn.title = "Натисни, за да махнеш думата";
+        btn.onclick = () => removeWord(index);
+        builtWords.appendChild(btn);
+      });
+    }
+
+    function removeWord(index) {
+      if (solved) return;
+      const removed = built.splice(index, 1)[0];
+      const buttons = [...document.querySelectorAll("#wordBank .word-chip")];
+      const btn = buttons.find(b => b.textContent === removed && b.disabled);
+      if (btn) {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+      }
+      renderBuilt();
+    }
+
+    function choosePunct(mark) {
+      if (solved) return;
+      selectedPunct = mark;
+      document.getElementById("selectedPunct").textContent = mark;
+    }
+
+    function resetCurrent() {
+      if (solved) return;
+      built = [];
+      selectedPunct = "";
+      document.getElementById("selectedPunct").textContent = "_";
+      document.querySelectorAll("#wordBank .word-chip").forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+      });
+      renderBuilt();
+      document.getElementById("feedback").className = "feedback";
+      document.getElementById("feedback").innerHTML = "";
+    }
+
+    function checkAnswer() {
+      const item = data[current];
+      const feedback = document.getElementById("feedback");
+
+      if (built.length !== item.words.length || !selectedPunct) {
+        feedback.className = "feedback bad";
+        feedback.innerHTML = "🙂 Подреди всички думи и избери препинателен знак.";
+        return;
+      }
+
+      const attempt = built.join(" ") + selectedPunct;
+      if (attempt === item.full) {
+        solved = true;
+        score++;
+        document.getElementById("score").textContent = `Точки: ${score}`;
+        feedback.className = "feedback good";
+        feedback.innerHTML = `✅ Браво! Правилното изречение е: <strong>${item.full}</strong> <span class="emoji">🌟</span>`;
+        document.getElementById("nextBtn").classList.remove("hidden");
+      } else {
+        feedback.className = "feedback bad";
+        feedback.innerHTML = `❌ Опитай пак! Ти подреди: <strong>${attempt}</strong>`;
+      }
+    }
+
+    function nextSentence() {
+      current++;
+      if (current < data.length) {
+        renderSentence();
+      } else {
+        endGame();
+      }
+    }
+
+    function endGame() {
+      document.getElementById("gameScreen").classList.add("hidden");
+      document.getElementById("endScreen").classList.remove("hidden");
+
+      let msg = "";
+      if (score <= 5) {
+        msg = "Ти започваш чудесно! Играй пак и ще станеш истински майстор на изреченията. 🐣";
+      } else if (score <= 10) {
+        msg = "Много добро представяне! Подреждаш думите все по-добре. 🐻";
+      } else if (score <= 14) {
+        msg = "Страхотно! Ти си много добър в строежа на изречения. 🦄";
+      } else {
+        msg = "Прекрасно! Ти си шампион по изречения и препинателни знаци! 👑";
+      }
+
+      document.getElementById("finalResult").innerHTML = `
+        <strong>Твоят резултат:</strong> ${score} от ${data.length} точки.<br><br>
+        ${msg}
+      `;
+    }
+
+    function restartGame() {
+      current = 0;
+      score = 0;
+      document.getElementById("endScreen").classList.add("hidden");
+      document.getElementById("gameScreen").classList.remove("hidden");
+      renderSentence();
+    }
+  </script>
+</body>
+</html>
