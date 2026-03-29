@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Тайните на представлението</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Georgia", "Times New Roman", serif;
+      color: #2f1f12;
+      background:
+        linear-gradient(rgba(248,239,214,0.86), rgba(248,239,214,0.88)),
+        url('ЛАЛКА 2026-03-29 193342.jpg') center/cover fixed no-repeat;
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .card {
+      background: rgba(255,248,230,0.95);
+      border: 3px solid #b98b4d;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+      padding: 24px;
+    }
+    h1, h2, h3 {
+      margin-top: 0;
+      color: #8a4d18;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    .topbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .badge {
+      background: #f3dfb0;
+      border: 2px solid #c49d58;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 700;
+    }
+    .hidden { display: none; }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      font-weight: 700;
+      transition: transform .08s ease, opacity .2s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    .primary {
+      background: #9c5d23;
+      color: white;
+    }
+    .secondary {
+      background: #e7c985;
+      color: #4b2e14;
+    }
+    .answers {
+      display: grid;
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .answer {
+      width: 100%;
+      text-align: left;
+      background: #fff7e5;
+      border: 2px solid #d6b06c;
+      color: #3b2815;
+    }
+    .answer.correct {
+      background: #d8f0c9;
+      border-color: #6faa48;
+    }
+    .answer.wrong {
+      background: #f7d1cc;
+      border-color: #c35d55;
+    }
+    .question-box {
+      margin-top: 10px;
+      padding: 18px;
+      background: rgba(255,255,255,0.65);
+      border-left: 6px solid #b47c34;
+      border-radius: 12px;
+      line-height: 1.6;
+      font-size: 1.1rem;
+    }
+    .progress {
+      height: 14px;
+      background: #ead6ab;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 10px 0 20px;
+      border: 1px solid #c69a57;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #b36622, #e4ad45);
+      transition: width .25s ease;
+    }
+    .result {
+      font-size: 1.15rem;
+      line-height: 1.7;
+      background: #fff7e8;
+      border-radius: 12px;
+      padding: 16px;
+      border: 2px solid #d0a25b;
+      margin-top: 16px;
+    }
+    .small {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+    .story {
+      background: rgba(255,255,255,0.62);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 18px 0;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="startScreen">
+      <h1>Тайните на представлението</h1>
+      <p class="subtitle">
+        Образователна игра по главата <strong>„Представлението“</strong> от <strong>„Под игото“</strong> на Иван Вазов за ученици от 6. клас.
+      </p>
+
+      <div class="story">
+        <h3>Сюжет на играта</h3>
+        <p>
+          В Бяла черква всички тръпнат в очакване на голямото представление. Вечерта започва тържествено,
+          но на сцената и сред публиката възникват напрежение, смях, възторг и неочаквани обрати.
+          Вашата мисия е да преминете през 15 въпроса и да спасите театралната вечер.
+        </p>
+      </div>
+
+      <p><strong>Правила:</strong> За всеки верен отговор получаваш 1 точка. Накрая ще видиш резултата си.</p>
+      <button class="primary" onclick="startGame()">Започни играта</button>
+    </div>
+
+    <div class="card hidden" id="gameScreen">
+      <div class="topbar">
+        <div class="badge" id="qCounter">Въпрос 1 / 15</div>
+        <div class="badge" id="scoreBox">Точки: 0</div>
+      </div>
+
+      <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <h2 id="stageTitle">Етап 1: Подготовката</h2>
+      <div class="question-box" id="questionText"></div>
+
+      <div class="answers" id="answersBox"></div>
+
+      <div id="feedback" class="result hidden"></div>
+      <button class="primary hidden" id="nextBtn" onclick="nextQuestion()">Следващ въпрос</button>
+    </div>
+
+    <div class="card hidden" id="endScreen">
+      <h2>Край на играта</h2>
+      <div class="result" id="finalResult"></div>
+      <button class="primary" onclick="restartGame()">Играй отново</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        stage: "Етап 1: Подготовката",
+        q: "От кое произведение е главата „Представлението“?",
+        options: ["От „Под игото“", "От „Немили-недраги“", "От „Една българка“", "От „Чичовци“"],
+        answer: 0,
+        explain: "Правилен отговор: „Под игото“."
+      },
+      {
+        stage: "Етап 1: Подготовката",
+        q: "Кой е авторът на „Под игото“?",
+        options: ["Христо Ботев", "Иван Вазов", "Елин Пелин", "Йордан Йовков"],
+        answer: 1,
+        explain: "Авторът на романа е Иван Вазов."
+      },
+      {
+        stage: "Етап 1: Подготовката",
+        q: "Какво важно събитие се подготвя в главата?",
+        options: ["Сватба", "Събор", "Театрално представление", "Военен парад"],
+        answer: 2,
+        explain: "Цялото градче се готви за театрално представление."
+      },
+      {
+        stage: "Етап 1: Подготовката",
+        q: "Какво настроение цари сред хората преди представлението?",
+        options: ["Безразличие", "Страх и мълчание", "Вълнение и любопитство", "Гняв"],
+        answer: 2,
+        explain: "Хората са силно развълнувани и любопитни."
+      },
+      {
+        stage: "Етап 2: На сцената",
+        q: "Кое прави сцената особено запомняща се за публиката?",
+        options: ["Напрежението, играта и силните емоции", "Много музиканти", "Дълга почивка", "Фойерверки"],
+        answer: 0,
+        explain: "Публиката реагира силно на емоциите и събитията на сцената."
+      },
+      {
+        stage: "Етап 2: На сцената",
+        q: "Как реагира публиката по време на представлението?",
+        options: ["Остава напълно тиха", "Равнодушна е", "Силно съпреживява случващото се", "Напуска залата веднага"],
+        answer: 2,
+        explain: "Публиката се вълнува, съчувства и реагира бурно."
+      },
+      {
+        stage: "Етап 2: На сцената",
+        q: "Какво показва поведението на зрителите?",
+        options: ["Че театърът не ги интересува", "Че изкуството им въздейства силно", "Че не разбират сюжета", "Че чакат края"],
+        answer: 1,
+        explain: "Реакциите им показват силното въздействие на театъра."
+      },
+      {
+        stage: "Етап 3: Неочакваният обрат",
+        q: "Какво постепенно нараства по време на представлението?",
+        options: ["Смях без причина", "Напрежение", "Сънливост", "Скука"],
+        answer: 1,
+        explain: "Освен вълнение, усеща се и напрежение."
+      },
+      {
+        stage: "Етап 3: Неочакваният обрат",
+        q: "Кое най-добре описва атмосферата в главата?",
+        options: ["Комична и напълно спокойна", "Тържествена, напрегната и вълнуваща", "Тъжна и монотонна", "Студена и делова"],
+        answer: 1,
+        explain: "Атмосферата съчетава тържественост, вълнение и напрежение."
+      },
+      {
+        stage: "Етап 3: Неочакваният обрат",
+        q: "Какво се откроява като важно послание в главата?",
+        options: ["Силата на общността и духовното пробуждане", "Че ученето е трудно", "Че театърът е само развлечение", "Че никой не трябва да рискува"],
+        answer: 0,
+        explain: "Главата подсказва духовно пробуждане и сила на общността."
+      },
+      {
+        stage: "Етап 4: Героите говорят",
+        q: "Каква е ролята на общността в „Представлението“?",
+        options: ["Стои разделена", "Без значение е", "Събира се около обща кауза и преживяване", "Пречи на всичко"],
+        answer: 2,
+        explain: "Хората се обединяват около едно силно общо преживяване."
+      },
+      {
+        stage: "Етап 4: Героите говорят",
+        q: "Как театралната вечер влияе на хората?",
+        options: ["Оставя ги безразлични", "Развълнува ги и ги кара да съпреживяват", "Кара ги да заспят", "Не им прави впечатление"],
+        answer: 1,
+        explain: "Представлението ги развълнува и разкрива вътрешни чувства."
+      },
+      {
+        stage: "Етап 4: Героите говорят",
+        q: "Кое чувство НЕ е типично за публиката в тази глава?",
+        options: ["Възторг", "Състрадание", "Вълнение", "Пълно равнодушие"],
+        answer: 3,
+        explain: "Публиката не е равнодушна, а силно ангажирана."
+      },
+      {
+        stage: "Етап 5: Спасете вечерта",
+        q: "Защо тази глава е важна за романа?",
+        options: ["Показва само театъра", "Разкрива настроенията на народа и времето", "Разказва за пътешествие", "Описва само училището"],
+        answer: 1,
+        explain: "Главата е важна, защото разкрива духа на общността и времето."
+      },
+      {
+        stage: "Етап 5: Спасете вечерта",
+        q: "Кое твърдение е най-вярно за „Представлението“?",
+        options: ["То е маловажен епизод", "То показва как изкуството събужда хората", "То няма връзка с героите", "То е само смешна сцена"],
+        answer: 1,
+        explain: "В главата изкуството въздейства силно и събужда хората."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let locked = false;
+
+    function startGame() {
+      document.getElementById("startScreen").classList.add("hidden");
+      document.getElementById("gameScreen").classList.remove("hidden");
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      locked = false;
+      const item = questions[current];
+      document.getElementById("stageTitle").textContent = item.stage;
+      document.getElementById("qCounter").textContent = `Въпрос ${current + 1} / ${questions.length}`;
+      document.getElementById("scoreBox").textContent = `Точки: ${score}`;
+      document.getElementById("questionText").textContent = item.q;
+
+      const answersBox = document.getElementById("answersBox");
+      answersBox.innerHTML = "";
+      item.options.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.className = "answer";
+        btn.textContent = option;
+        btn.onclick = () => checkAnswer(index, btn);
+        answersBox.appendChild(btn);
+      });
+
+      document.getElementById("feedback").classList.add("hidden");
+      document.getElementById("nextBtn").classList.add("hidden");
+      document.getElementById("progressBar").style.width = `${(current / questions.length) * 100}%`;
+    }
+
+    function checkAnswer(index, clickedBtn) {
+      if (locked) return;
+      locked = true;
+
+      const item = questions[current];
+      const buttons = document.querySelectorAll(".answer");
+
+      buttons.forEach((btn, i) => {
+        if (i === item.answer) btn.classList.add("correct");
+      });
+
+      const feedback = document.getElementById("feedback");
+      if (index === item.answer) {
+        score++;
+        clickedBtn.classList.add("correct");
+        feedback.innerHTML = `✅ <strong>Браво!</strong> ${item.explain}`;
+      } else {
+        clickedBtn.classList.add("wrong");
+        feedback.innerHTML = `❌ <strong>Не съвсем.</strong> ${item.explain}`;
+      }
+
+      document.getElementById("scoreBox").textContent = `Точки: ${score}`;
+      feedback.classList.remove("hidden");
+      document.getElementById("nextBtn").classList.remove("hidden");
+      document.getElementById("progressBar").style.width = `${((current + 1) / questions.length) * 100}%`;
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        renderQuestion();
+      } else {
+        endGame();
+      }
+    }
+
+    function endGame() {
+      document.getElementById("gameScreen").classList.add("hidden");
+      document.getElementById("endScreen").classList.remove("hidden");
+
+      let message = "";
+      if (score <= 5) {
+        message = "Ти направи първи стъпки в света на „Представлението“. Прочети още веднъж главата и ще се справиш още по-добре.";
+      } else if (score <= 10) {
+        message = "Много добро представяне! Ти разбираш основните моменти от главата.";
+      } else if (score <= 14) {
+        message = "Отлично! Ти почти напълно разкри тайните на театралната вечер.";
+      } else {
+        message = "Блестящо! Ти спаси представлението и си истински познавач на „Под игото“!";
+      }
+
+      document.getElementById("finalResult").innerHTML = `
+        <strong>Твоят резултат:</strong> ${score} от ${questions.length} точки.<br><br>
+        ${message}
+        <p class="small">Играта е създадена по мотиви от главата „Представлението“ от „Под игото“ на Иван Вазов.</p>
+      `;
+    }
+
+    function restartGame() {
+      current = 0;
+      score = 0;
+      document.getElementById("endScreen").classList.add("hidden");
+      document.getElementById("gameScreen").classList.remove("hidden");
+      renderQuestion();
+    }
+  </script>
+</body>
+</html>
