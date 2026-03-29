@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Магазин с евро – математика за 2. клас</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Comic Sans MS", sans-serif;
+      color: #2e2a26;
+      background:
+        radial-gradient(circle at 10% 15%, rgba(255,255,255,0.45) 0 4%, transparent 5%),
+        radial-gradient(circle at 80% 12%, rgba(255,255,255,0.35) 0 5%, transparent 6%),
+        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.35) 0 4%, transparent 5%),
+        linear-gradient(135deg, #bde0fe, #caffbf, #fff1a8, #ffd6e0, #e0c3fc);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 22px; }
+    .card {
+      background: rgba(255,255,255,0.92);
+      border: 5px solid #6ec6ff;
+      border-radius: 28px;
+      padding: 22px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.14);
+    }
+    h1 {
+      margin: 0 0 10px;
+      text-align: center;
+      color: #1d77b7;
+      font-size: 2.2rem;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 1.1rem;
+      margin-bottom: 18px;
+    }
+    .hidden { display: none; }
+    .intro {
+      background: linear-gradient(135deg, #eef9ff, #fff9d6);
+      border: 3px dashed #ffbf69;
+      border-radius: 20px;
+      padding: 16px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+      font-size: 1.05rem;
+    }
+    .btn {
+      border: none;
+      border-radius: 16px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .08s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .primary { background: #ff7b7b; color: white; }
+    .secondary { background: #ffd166; color: #5b4500; }
+    .success { background: #7bd389; color: #153d1d; }
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .badge {
+      background: #fff7c2;
+      border: 3px solid #ffc46b;
+      border-radius: 999px;
+      padding: 10px 15px;
+      font-weight: 700;
+      font-size: 1.02rem;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: #fcfdff;
+      border: 3px solid #d6efff;
+      border-radius: 22px;
+      padding: 16px;
+    }
+    .panel h2 {
+      margin-top: 0;
+      color: #1f6d9f;
+      font-size: 1.35rem;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 14px;
+    }
+    .product {
+      background: #ffffff;
+      border: 3px solid #e7f2fb;
+      border-radius: 18px;
+      padding: 12px;
+      text-align: center;
+      min-height: 180px;
+      cursor: pointer;
+      transition: transform .08s ease, border-color .2s ease;
+    }
+    .product:hover { transform: translateY(-2px); }
+    .product.selected {
+      border-color: #ff8fab;
+      background: #fff7fb;
+      box-shadow: inset 0 0 0 2px #ffb7cf;
+    }
+    .prod-img {
+      width: 100%;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .prod-name {
+      font-weight: 700;
+      font-size: 1.04rem;
+      margin-bottom: 6px;
+    }
+    .price {
+      display: inline-block;
+      background: #e8fff1;
+      border: 2px solid #7bd389;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-weight: 700;
+    }
+    .task-box {
+      background: linear-gradient(135deg, #fff9e9, #edf9ff);
+      border: 3px dashed #89c2ff;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 15px;
+      line-height: 1.7;
+      font-size: 1.08rem;
+    }
+    .money-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .money {
+      background: #ffffff;
+      border: 3px solid #d6efff;
+      border-radius: 18px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform .08s ease, border-color .2s ease;
+      min-height: 128px;
+    }
+    .money:hover { transform: translateY(-2px); }
+    .money.selected {
+      border-color: #52b788;
+      background: #f0fff5;
+      box-shadow: inset 0 0 0 2px #8fd6af;
+    }
+    .money svg {
+      width: 100%;
+      height: 62px;
+      display: block;
+      margin: 0 auto 6px;
+    }
+    .money-label {
+      font-weight: 700;
+    }
+    .sum-box {
+      margin-top: 15px;
+      padding: 14px;
+      border-radius: 16px;
+      background: #f7fbff;
+      border: 3px solid #ddebfa;
+      font-size: 1.08rem;
+      line-height: 1.7;
+    }
+    .controls {
+      margin-top: 15px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .feedback {
+      margin-top: 16px;
+      padding: 15px;
+      border-radius: 18px;
+      font-size: 1.08rem;
+      line-height: 1.7;
+      display: none;
+    }
+    .good {
+      display: block;
+      background: #ebfff0;
+      border: 3px solid #7bd389;
+    }
+    .bad {
+      display: block;
+      background: #fff0f0;
+      border: 3px solid #ff8c8c;
+    }
+    .result {
+      background: #fff7d6;
+      border: 3px solid #ffc857;
+      border-radius: 22px;
+      padding: 18px;
+      font-size: 1.15rem;
+      line-height: 1.75;
+      margin-top: 16px;
+    }
+    .center { text-align: center; }
+    .small { font-size: .95rem; opacity: 0.9; }
+    .mini-total {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0d7a52;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="startScreen">
+      <h1>🛒 Весел евро магазин 💶</h1>
+      <div class="subtitle">Математическа игра за 2. клас</div>
+      <div class="intro">
+        Добре дошъл в нашия онлайн магазин! Избери продукт, виж цената му в евро и натисни парите,
+        с които искаш да платиш. Трябва да дадеш <strong>точната сума или повече</strong>, а после да
+        сметнеш колко <strong>ресто</strong> ще ти върнат. Има <strong>15 задачи</strong>. Успех! 🌟
+      </div>
+      <div class="center">
+        <button class="btn primary" onclick="startGame()">Започни играта</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="gameScreen">
+      <div class="game-header">
+        <div class="badge" id="roundBadge">Задача 1 / 15</div>
+        <div class="badge" id="scoreBadge">Точки: 0</div>
+      </div>
+
+      <div class="layout">
+        <div class="panel">
+          <h2>Избери продукт</h2>
+          <div class="products" id="productsBox"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Плати в евро</h2>
+          <div class="task-box" id="taskText"></div>
+
+          <div class="label" style="font-weight:700;">Избери евро монети и банкноти:</div>
+          <div class="money-grid" id="moneyBox"></div>
+
+          <div class="sum-box">
+            <div>Избрана сума: <span class="mini-total" id="chosenSum">0 €</span></div>
+            <div>Цена на продукта: <strong id="productPrice">0 €</strong></div>
+            <div>Ресто: <strong id="changeValue">0 €</strong></div>
+          </div>
+
+          <div class="controls">
+            <button class="btn secondary" onclick="resetCurrent()">Изчисти парите</button>
+            <button class="btn success" onclick="checkAnswer()">Провери</button>
+            <button class="btn primary hidden" id="nextBtn" onclick="nextRound()">Следваща задача</button>
+          </div>
+
+          <div class="feedback" id="feedback"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card hidden" id="endScreen">
+      <h1>🎉 Браво, касиерче! 🎉</h1>
+      <div class="result" id="finalResult"></div>
+      <div class="center" style="margin-top:16px;">
+        <button class="btn primary" onclick="restartGame()">Играй отново</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const products = [
+  {name:"Ябълка", price:1, icon:"apple"},
+  {name:"Банан", price:2, icon:"banana"},
+  {name:"Хляб", price:3, icon:"bread"},
+  {name:"Мляко", price:4, icon:"milk"},
+  {name:"Топка", price:5, icon:"ball"},
+  {name:"Тетрадка", price:6, icon:"notebook"},
+  {name:"Пъзел", price:7, icon:"puzzle"},
+  {name:"Мече", price:8, icon:"teddy"}
+];
+
+const rounds = [
+  {product:"Ябълка", valid:[1,2,5]},
+  {product:"Банан", valid:[2,5]},
+  {product:"Хляб", valid:[3,5]},
+  {product:"Мляко", valid:[4,5,10]},
+  {product:"Топка", valid:[5,10]},
+  {product:"Тетрадка", valid:[6,10]},
+  {product:"Пъзел", valid:[7,10]},
+  {product:"Мече", valid:[8,10]},
+  {product:"Ябълка", valid:[2,10]},
+  {product:"Банан", valid:[5,10]},
+  {product:"Хляб", valid:[5,10]},
+  {product:"Мляко", valid:[10]},
+  {product:"Топка", valid:[10]},
+  {product:"Тетрадка", valid:[10]},
+  {product:"Пъзел", valid:[10]}
+];
+
+const moneySet = [
+  {value:1, type:"coin"},
+  {value:2, type:"coin"},
+  {value:5, type:"note"},
+  {value:10, type:"note"},
+  {value:20, type:"note"},
+  {value:50, type:"note"}
+];
+
+let current = 0;
+let score = 0;
+let selectedProduct = null;
+let selectedMoney = [];
+
+function euroText(n){ return n + " €"; }
+
+function productSvg(kind){
+  const svgs = {
+    apple:`<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="52" cy="47" rx="24" ry="24" fill="#ff5d73"/>
+      <ellipse cx="72" cy="47" rx="24" ry="24" fill="#ff6f61"/>
+      <rect x="57" y="16" width="6" height="15" rx="3" fill="#7a4e2d"/>
+      <path d="M62 20 C75 8, 90 15, 88 28 C77 29, 66 28, 62 20Z" fill="#5dbb63"/>
+    </svg>`,
+    banana:`<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+      <path d="M24 58 C40 78, 86 73, 101 38" stroke="#f4d35e" stroke-width="18" fill="none" stroke-linecap="round"/>
+      <path d="M28 56 C42 72, 83 67, 96 38" stroke="#ffe385" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <circle cx="100" cy="38" r="3" fill="#7a5a1d"/><circle cx="24" cy="58" r="3" fill="#7a5a1d"/>
+    </svg>`,
+    bread:`<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+      <rect x="22" y="28" rx="20" ry="20" width="76" height="38" fill="#d9a25f"/>
+      <path d="M38 34 v24 M58 32 v28 M78 34 v24" stroke="#f5d0a0" stroke-width="5" stroke-linecap="round"/>
+    </svg>`,
+    milk:`<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+      <path d="M44 18 h32 l-4 14 v38 h-24 v-38z" fill="#eaf4ff" stroke="#8ecae6" stroke-width="3"/>
+      <rect x="48" y="40" width="24" height="18" fill="#bde0fe"/>
+      <text x="60" y="53" text-anchor="middle" font-size="11" fill="#1d77b7" font-family="Arial">МЛЯКО</text>
+    </svg>`,
+    ball:`<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="60" cy="45" r="28" fill="#ffb703"/>
+      <path d="M33 45 h54 M60 17 v56 M40 26 c18 10 22 28 20 38 M80 26 c-18 10 -22 28 -20 38" stroke="#219ebc" stroke-width="4" fill="none"/>
+    </svg>`,
+    notebook:`<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+      <rect x="30" y="18" width="56" height="54" rx="4" fill="#ffffff" stroke="#7b9acc" stroke-width="3"/>
+      <rect x="30" y="18" width="12" height="54" fill="#ff8fab"/>
+      <line x1="48" y1="30" x2="78" y2="30" stroke="#b9d6f2" stroke-width="3"/>
+      <line x1="48" y1="40" x2="78" y2="40" stroke="#b9d6f2" stroke-width="3"/>
+      <line x1="48" y1="50" x2="78" y2="50" stroke="#b9d6f2" stroke-width="3"/>
+    </svg>`,
+    puzzle:`<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+      <path d="M33 27 h22 c0-8 12-8 12 0 h20 v16 c8 0 8 12 0 12 v18 h-20 c0-8-12-8-12 0 h-22 v-18 c-8 0-8-12 0-12z" fill="#a0e7e5" stroke="#3aa7a3" stroke-width="3"/>
+    </svg>`,
+    teddy:`<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="42" cy="27" r="10" fill="#c08a53"/><circle cx="78" cy="27" r="10" fill="#c08a53"/>
+      <circle cx="60" cy="38" r="22" fill="#d09a62"/>
+      <circle cx="60" cy="65" r="16" fill="#d09a62"/>
+      <circle cx="52" cy="37" r="3" fill="#2f241d"/><circle cx="68" cy="37" r="3" fill="#2f241d"/>
+      <ellipse cx="60" cy="45" rx="7" ry="5" fill="#f7d8b7"/>
+      <circle cx="60" cy="43" r="2.5" fill="#2f241d"/>
+    </svg>`
+  };
+  return svgs[kind] || "";
+}
+
+function moneySvg(item){
+  if(item.type === "coin"){
+    return `<svg viewBox="0 0 120 70" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="60" cy="35" r="28" fill="#ffd166" stroke="#d4a017" stroke-width="5"/>
+      <circle cx="60" cy="35" r="21" fill="#ffe08a" stroke="#d4a017" stroke-width="2"/>
+      <text x="60" y="43" text-anchor="middle" font-size="24" font-weight="bold" fill="#7a5a00" font-family="Arial">${item.value}€</text>
+    </svg>`;
+  }
+  const color = item.value === 5 ? ["#b8f2e6","#4cbfa6"] :
+                item.value === 10 ? ["#f7d6e0","#d17b9f"] :
+                item.value === 20 ? ["#d9c2f0","#8d6ccf"] :
+                ["#ffe29a","#e0a106"];
+  return `<svg viewBox="0 0 120 70" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="12" width="100" height="46" rx="8" fill="${color[0]}" stroke="${color[1]}" stroke-width="4"/>
+    <circle cx="30" cy="35" r="10" fill="rgba(255,255,255,0.45)"/>
+    <circle cx="90" cy="35" r="10" fill="rgba(255,255,255,0.45)"/>
+    <text x="60" y="41" text-anchor="middle" font-size="22" font-weight="bold" fill="#344" font-family="Arial">${item.value}€</text>
+  </svg>`;
+}
+
+function startGame(){
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("gameScreen").classList.remove("hidden");
+  renderRound();
+}
+
+function renderRound(){
+  const round = rounds[current];
+  selectedProduct = null;
+  selectedMoney = [];
+  document.getElementById("roundBadge").textContent = `Задача ${current+1} / ${rounds.length}`;
+  document.getElementById("scoreBadge").textContent = `Точки: ${score}`;
+  document.getElementById("feedback").className = "feedback";
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("nextBtn").classList.add("hidden");
+
+  const productsBox = document.getElementById("productsBox");
+  productsBox.innerHTML = "";
+
+  products.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "product";
+    div.innerHTML = `
+      <div class="prod-img">${productSvg(p.icon)}</div>
+      <div class="prod-name">${p.name}</div>
+      <div class="price">${euroText(p.price)}</div>
+    `;
+    div.onclick = () => selectProduct(p.name, div);
+    productsBox.appendChild(div);
+  });
+
+  const moneyBox = document.getElementById("moneyBox");
+  moneyBox.innerHTML = "";
+  moneySet.forEach((m, idx) => {
+    const div = document.createElement("div");
+    div.className = "money";
+    div.innerHTML = `${moneySvg(m)}<div class="money-label">${m.type === "coin" ? "Монета" : "Банкнота"} – ${euroText(m.value)}</div>`;
+    div.onclick = () => toggleMoney(idx, div);
+    moneyBox.appendChild(div);
+  });
+
+  const neededProduct = products.find(p => p.name === round.product);
+  document.getElementById("taskText").innerHTML = `
+    Избери продукта <strong>${round.product}</strong>.
+    После натисни парите, с които искаш да платиш.
+    Накрая сметни колко ресто ще ти върнат.
+  `;
+  document.getElementById("productPrice").textContent = euroText(neededProduct.price);
+  updateSum();
+}
+
+function selectProduct(name, element){
+  selectedProduct = name;
+  document.querySelectorAll(".product").forEach(x => x.classList.remove("selected"));
+  element.classList.add("selected");
+}
+
+function toggleMoney(idx, element){
+  const pos = selectedMoney.indexOf(idx);
+  if(pos >= 0){
+    selectedMoney.splice(pos,1);
+    element.classList.remove("selected");
+  }else{
+    selectedMoney.push(idx);
+    element.classList.add("selected");
+  }
+  updateSum();
+}
+
+function getSelectedTotal(){
+  return selectedMoney.reduce((sum, idx) => sum + moneySet[idx].value, 0);
+}
+
+function updateSum(){
+  const total = getSelectedTotal();
+  const round = rounds[current];
+  const price = products.find(p => p.name === round.product).price;
+  const change = Math.max(0, total - price);
+  document.getElementById("chosenSum").textContent = euroText(total);
+  document.getElementById("changeValue").textContent = euroText(change);
+}
+
+function resetCurrent(){
+  selectedMoney = [];
+  document.querySelectorAll(".money").forEach(x => x.classList.remove("selected"));
+  updateSum();
+  const fb = document.getElementById("feedback");
+  fb.className = "feedback";
+  fb.innerHTML = "";
+}
+
+function checkAnswer(){
+  const round = rounds[current];
+  const feedback = document.getElementById("feedback");
+  const price = products.find(p => p.name === round.product).price;
+  const total = getSelectedTotal();
+
+  if(selectedProduct === null){
+    feedback.className = "feedback bad";
+    feedback.innerHTML = "🙂 Първо избери продукт.";
+    return;
+  }
+  if(selectedProduct !== round.product){
+    feedback.className = "feedback bad";
+    feedback.innerHTML = `❌ Тук трябва да избереш продукта <strong>${round.product}</strong>.`;
+    return;
+  }
+  if(selectedMoney.length === 0){
+    feedback.className = "feedback bad";
+    feedback.innerHTML = "🙂 Избери пари, с които да платиш.";
+    return;
+  }
+  if(total < price){
+    feedback.className = "feedback bad";
+    feedback.innerHTML = `❌ Не достигат пари. Цената е <strong>${euroText(price)}</strong>, а ти даде <strong>${euroText(total)}</strong>.`;
+    return;
+  }
+  if(!round.valid.includes(total)){
+    feedback.className = "feedback bad";
+    feedback.innerHTML = `🙂 Тази задача очаква да платиш с една от тези суми: <strong>${round.valid.map(v => euroText(v)).join(", ")}</strong>. Ти даде <strong>${euroText(total)}</strong>.`;
+    return;
+  }
+
+  const change = total - price;
+  score++;
+  document.getElementById("scoreBadge").textContent = `Точки: ${score}`;
+  feedback.className = "feedback good";
+  feedback.innerHTML = `✅ Браво! Продуктът е <strong>${round.product}</strong> за <strong>${euroText(price)}</strong>. Ти даде <strong>${euroText(total)}</strong>, затова рестото е <strong>${euroText(change)}</strong>.`;
+  document.getElementById("nextBtn").classList.remove("hidden");
+}
+
+function nextRound(){
+  current++;
+  if(current < rounds.length){
+    renderRound();
+  } else {
+    endGame();
+  }
+}
+
+function endGame(){
+  document.getElementById("gameScreen").classList.add("hidden");
+  document.getElementById("endScreen").classList.remove("hidden");
+  let msg = "";
+  if(score <= 5){
+    msg = "Ти направи добро начало. Играй пак и ще смяташ рестото още по-бързо! 🌼";
+  } else if(score <= 10){
+    msg = "Много добре! Ти вече умееш да плащаш и да смяташ ресто в евро. ⭐";
+  } else if(score <= 14){
+    msg = "Страхотно! Почти винаги избираш правилните пари и рестото. 🚀";
+  } else {
+    msg = "Отлично! Ти си истински шампион в магазина и смяташ чудесно с евро! 👑";
+  }
+  document.getElementById("finalResult").innerHTML = `
+    <strong>Твоят резултат:</strong> ${score} от ${rounds.length} точки.<br><br>
+    ${msg}<br><br>
+    <span class="small">Подсказка: рестото намираме, като извадим цената от дадената сума.</span>
+  `;
+}
+
+function restartGame(){
+  current = 0;
+  score = 0;
+  document.getElementById("endScreen").classList.add("hidden");
+  document.getElementById("gameScreen").classList.remove("hidden");
+  renderRound();
+}
+</script>
+</body>
+</html>
